@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoClicker</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px;
+      font-size: 16px;
+    }
+    @media (max-width: 600px) {
+      input, button {
+        width: 90%;
+        margin: 10px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📱🖱️ Web AutoClicker</h1>
+
+  <label>Click Interval (ms):</label><br>
+  <input type="number" id="interval" value="100"><br>
+
+  <label>Total Clicks:</label><br>
+  <input type="number" id="count" value="20"><br>
+
+  <button onclick="startClicking()">Start</button>
+  <button onclick="stopClicking()">Stop</button>
+
+  <br><br>
+  <button id="clickTarget" style="margin-top:30px;">Click Me!</button>
+
+  <script>
+    let intervalId;
+    function startClicking() {
+      const interval = parseInt(document.getElementById('interval').value);
+      const total = parseInt(document.getElementById('count').value);
+      let clicks = 0;
+      const target = document.getElementById('clickTarget');
+      intervalId = setInterval(() => {
+        target.click();
+        clicks++;
+        if (clicks >= total) clearInterval(intervalId);
+      }, interval);
+    }
+
+    function stopClicking() {
+      clearInterval(intervalId);
+    }
+
+    document.getElementById('clickTarget').addEventListener('click', () => {
+      alert("Button Clicked!");
+    });
+  </script>
+
+</body>
+</html>
