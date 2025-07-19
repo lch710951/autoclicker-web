@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AutoClicker</title>
+  <title>AutoClicker Aim</title>
   <style>
     body {
       font-family: sans-serif;
       text-align: center;
       padding: 20px;
+      margin: 0;
     }
     input, button {
       padding: 10px;
@@ -21,11 +22,28 @@
         margin: 10px 0;
       }
     }
+
+    #aim {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      background: red;
+      border-radius: 50%;
+      top: 300px;
+      left: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      user-select: none;
+      touch-action: none;
+    }
   </style>
 </head>
 <body>
 
-  <h1>📱🖱️ Web AutoClicker</h1>
+  <h1>🎯 Web AutoClicker with Aim</h1>
 
   <label>Click Interval (ms):</label><br>
   <input type="number" id="interval" value="100"><br>
@@ -36,8 +54,8 @@
   <button onclick="startClicking()">Start</button>
   <button onclick="stopClicking()">Stop</button>
 
-  <br><br>
-  <button id="clickTarget" style="margin-top:30px;">Click Me!</button>
+  <!-- Aim Target -->
+  <div id="aim">AIM</div>
 
   <script>
     let intervalId;
@@ -45,9 +63,10 @@
       const interval = parseInt(document.getElementById('interval').value);
       const total = parseInt(document.getElementById('count').value);
       let clicks = 0;
-      const target = document.getElementById('clickTarget');
+      const target = document.getElementById('aim');
+
       intervalId = setInterval(() => {
-        target.click();
+        simulateClick(target);
         clicks++;
         if (clicks >= total) clearInterval(intervalId);
       }, interval);
@@ -57,9 +76,53 @@
       clearInterval(intervalId);
     }
 
-    document.getElementById('clickTarget').addEventListener('click', () => {
-      alert("Button Clicked!");
+    function simulateClick(element) {
+      const event = new Event('click', { bubbles: true });
+      element.dispatchEvent(event);
+    }
+
+    // Show feedback when clicked
+    document.getElementById('aim').addEventListener('click', () => {
+      console.log("AIM clicked");
+      document.getElementById('aim').style.background = 'green';
+      setTimeout(() => {
+        document.getElementById('aim').style.background = 'red';
+      }, 100);
     });
+
+    // Drag & Drop (touch + mouse)
+    const aim = document.getElementById('aim');
+    let isDragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    function startDrag(e) {
+      isDragging = true;
+      const rect = aim.getBoundingClientRect();
+      offsetX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+      offsetY = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+    }
+
+    function drag(e) {
+      if (!isDragging) return;
+      const x = (e.touches ? e.touches[0].clientX : e.clientX) - offsetX;
+      const y = (e.touches ? e.touches[0].clientY : e.clientY) - offsetY;
+      aim.style.left = `${x}px`;
+      aim.style.top = `${y}px`;
+    }
+
+    function endDrag() {
+      isDragging = false;
+    }
+
+    aim.addEventListener('mousedown', startDrag);
+    aim.addEventListener('mousemove', drag);
+    aim.addEventListener('mouseup', endDrag);
+    aim.addEventListener('mouseleave', endDrag);
+
+    aim.addEventListener('touchstart', startDrag);
+    aim.addEventListener('touchmove', drag);
+    aim.addEventListener('touchend', endDrag);
   </script>
 
 </body>
